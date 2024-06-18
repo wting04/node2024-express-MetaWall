@@ -1,5 +1,6 @@
 //model    
 const Post = require('../models/post');
+const User = require('../models/user'); //W4
 
 //回傳結果模組化
 const successHandle = require('../services/successHandle');
@@ -11,9 +12,22 @@ const errorHandle = require('../services/errorHandle');
     }
 */
 const posts_api = {
-    async getPost(req, res, next){        
+    async getPost(req, res, next){   
+        /*
+         *W4: 貼文關鍵字搜尋與貼文時間排序
+         asc 遞增(由小到大，由舊到新) "createdAt"
+         desc 遞減(由大到小、由新到舊) "-createdAt"
+         RegExp(req.query.q) 可將前端字串轉換成 正規表達式物件
+        */ 
+         const timeSort = req.query.timeSort === "asc" ? "createdAt":"-createdAt";
+         const q = req.query.q !== undefined ? {"content": new RegExp(req.query.q)} : {};
+         const allPost = await Post.find(q).populate({
+             path: 'user', // PostSchema 的欄位名稱
+             select: 'name photoUrl' // 要取得的資料欄位
+         }).sort(timeSort);         
+        
         //由貼文時間的新到舊顯示
-        const allPost = await Post.find().sort({createdAt: -1});
+        //const allPost = await Post.find().sort({createdAt: -1});
         // res.status(200).json({
         //     "status": "success",
         //     "data": allPost

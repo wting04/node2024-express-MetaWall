@@ -13,10 +13,15 @@ const mongoose = require('mongoose');
 
 const PostSchema = new mongoose.Schema(
     {
+        // user: {
+        //     type: String,
+        //     required: [true, "發文者名稱 user 未提供"]
+        // },  
         user: {
-            type: String,
-            required: [true, "發文者名稱 userName 未提供"]
-        },      
+            type: mongoose.Schema.ObjectId,
+            ref: "User", // 同user.js的mongoose.model('User', UserSchema);
+            required: [true, '發文者名稱 user 未提供']
+        },            
         content: {
             type: String,
             required: [true, "發文內容 content 未提供"]        
