@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const cors = require('cors'); //跨網域
 
+const errorHandle = require('./services/errorHandle'); //W4
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
@@ -23,4 +24,9 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 
+//W4: 404 路由錯誤
+app.use((req, res, next) => {
+    errorHandle(res, 404, 'routing');
+  });
+  
 module.exports = app;
