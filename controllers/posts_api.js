@@ -2,9 +2,11 @@
 const Post = require('../models/post');
 const User = require('../models/user'); //W4
 
+//middleware
+const appError = require('../middleware/appError'); //W5-3: 可預期錯誤的管理，替代原{errorHandle}
 //回傳結果模組化
 const successHandle = require('../services/successHandle');
-const errorHandle = require('../services/errorHandle');
+//const { errorHandle } = require('./services/errorHandle'); 
 
 /*將函式方法打包成物件
     function(req, res, next) {
@@ -35,6 +37,20 @@ const posts_api = {
         successHandle(res, allPost);
     },
     async createPost(req, res, next){
+        const data = req.body;
+        if(data.content === undefined){
+            return next(appError(400,"發文內容 content 未提供"));
+        }
+        const newPost = await Post.create(
+            {
+                user: data.user,
+                content: data.content.trim(),
+                imageUrl: data.imageUrl,
+                likes: data.likes                                  
+            }
+        );    
+        successHandle(res, newPost);        
+/*
         try{
             const data = req.body;
             if (data.content !== undefined) {
@@ -54,6 +70,7 @@ const posts_api = {
         }catch(error){
             errorHandle(res, 400, 'format');
         }
+*/            
     }, 
     async deleteAllPost(req, res, next){
         if(req.originalUrl === '/posts'){
@@ -62,11 +79,11 @@ const posts_api = {
                 await Post.deleteMany({});
                 successHandle(res, []); //顯示清空
             }else{
-                errorHandle(res, 400, 'data');
+                return next(appError(400, 'data', next));
             }
 
         }else{
-            errorHandle(res, 400, 'routing');
+            return next(appError(404, 'routing', next));
         }
 
     },  
@@ -77,15 +94,36 @@ const posts_api = {
             if (delPost) {
                 successHandle(res, delPost);
             } else {
-                errorHandle(res, 400, 'id');
+                return next(appError(400, 'id', next));
             }            
         }catch(error){
-            errorHandle(res, 400, 'id');
+            return next(appError(400, 'id', next));
         }
     },           
     async editOnePost(req, res, next){
+        const data = req.body; //AS POST 
+        if(data.content === undefined){
+            return next(appError(400,"發文內容 content 未提供"));
+        }  
+        const upddata = { 
+            user: data.user,
+            content: data.content.trim(),
+            imageUrl: data.imageUrl, 
+            likes: data.likes       
+        };
+        //更新單筆
+        const id = req.params.id; //AS DELETE{id}
+        //option開啟new 可回傳修改成功的資料、開啟runValidators 作更新資料的驗證
+        const resPost = await Post.findByIdAndUpdate(id,upddata,{new: true, runValidators: true});                  
+        if (resPost) {
+            successHandle(res, resPost);
+        } else {
+            return next(appError(400, 'id', next));
+        } 
+/*
         try{
             const data = req.body; //AS POST 
+
             if (data.user !== undefined && data.content !== undefined) {
                 const upddata = { 
                     user: data.user,
@@ -107,7 +145,8 @@ const posts_api = {
             }                                           
         }catch(error){
             errorHandle(res, 400, 'update');
-        }    
+        }  
+*/              
     }, 
 }
 
