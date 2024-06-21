@@ -5,11 +5,10 @@ const dotenv = require('dotenv');
 dotenv.config({path: './config.env'});
 //console.log(process.env.PORT); 
 //連接資料庫
-const DB = "mongodb://localhost:27017/democase";
-// const DB = process.env.DATABASE.replace(
-//     "<password>", 
-//     process.env.DB_PASSWORD ??= ""
-//   );
+const DB = process.env.DATABASE.replace(
+    "<password>", 
+    process.env.DB_PASSWORD ??= ""
+  );
 
 mongoose.connect(DB)
     .then(()=>{ console.log("資料庫連線成功!")})
