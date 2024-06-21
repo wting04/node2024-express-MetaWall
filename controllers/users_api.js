@@ -1,6 +1,7 @@
 //W6: 用戶登入驗證與用戶資料處理
 const bcrypt = require('bcryptjs');
 //model 
+const Post = require('../models/post'); //W8
 const User = require('../models/user');
 //middleware
 const appError = require('../middleware/appError');
@@ -11,6 +12,12 @@ const successHandle = require('../services/successHandle');
 
 
 const users_api = {
+  //=====會員按讚追蹤動態===== W8
+
+
+
+  
+  //=====會員功能=====  
     async signUp (req, res, next) {
       let { email,password,confirmPassword,name } = req.body;
       // 內容不可為空
