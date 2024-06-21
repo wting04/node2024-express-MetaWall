@@ -9,13 +9,13 @@ const { isAuth } = require('../middleware/auth');
 
 //=====會員按讚追蹤動態=====
 //追蹤朋友
-//router.post('/:userID/follow', isAuth, asyncErrorHandle(UsersControllers.addFollow));
+router.post('/:userID/follow', isAuth, asyncErrorHandle(UsersControllers.addFollow));
 //取消追蹤朋友
-//router.delete('/:userID/unfollow', isAuth, asyncErrorHandle(UsersControllers.unFollow));
+router.delete('/:userID/unfollow', isAuth, asyncErrorHandle(UsersControllers.unFollow));
 //取得個人按讚列表
-//router.get('/getLikeList', isAuth, asyncErrorHandle(UsersControllers.getLikeList));
+router.get('/getLikeList', isAuth, asyncErrorHandle(UsersControllers.getLikeList));
 //取得個人追蹤名單
-//router.get('/following', isAuth, asyncErrorHandle(UsersControllers.followingList));
+router.get('/following', isAuth, asyncErrorHandle(UsersControllers.getFollowingList));
 
 //=====會員功能=====
 //註冊

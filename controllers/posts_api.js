@@ -1,4 +1,3 @@
-const validator = require('validator');
 //model    
 const Post = require('../models/post');
 const User = require('../models/user'); //W4
@@ -86,7 +85,7 @@ const posts_api = {
             successHandle(res,newPostDetail);   
 
         } else {
-            return next(appError(400, '此用戶不存在', next));
+            return next(appError(400, 'unfindUser', next));
         }     
         //asyncErrorHandles catch: errorHandle(res, 400, 'format');          
     }, 
@@ -140,7 +139,7 @@ const posts_api = {
         //console.log(req.params.userID);
         const user = await User.findOne({"_id":req.params.userID});
         if(!user){
-            return next(appError(400,'無此用戶',next));
+            return next(appError(400,'unfindUser',next));
         }
 
         const posts = await Post.find({user:req.params.userID})
@@ -152,7 +151,7 @@ const posts_api = {
         
     },      
     async deleteAllPost(req, res, next){
-        console.log(req.user.id);
+        //console.log(req.user.id);
         if(req.originalUrl === '/posts'){
             // const datanum = await Post.find().count();
             // if(datanum >= 1){
