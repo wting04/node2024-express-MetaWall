@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
-/* W4
+/* W4、W6
 * 用戶集合欄位
 - name：用戶名稱(必填)
-- email：用戶電郵信箱(必填)
+- email：登入帳號=用戶電郵信箱(必填)
 - photoUrl：用戶頭貼
 - gender：用戶性別 
+- password: 登入密碼(必填)
 
 - createdAt：發文時間(系統產生)
 - updatedAt：異動時間(系統產生)
@@ -15,11 +16,12 @@ const UserSchema = new mongoose.Schema(
     {
         name:{
             type: String,
-            required: [true, '用戶名稱 name 未填寫'] 
+            required: [true, '暱稱 name 未填寫'],
+            minlength: [2, 'name 長度至少 2 個字元以上'] //W6
         },       
         email: {
             type: String,
-            required: [true, '用戶電郵信箱 email 未填寫'],
+            required: [true, '帳號 email 未填寫'],
             unique: true,
             lowercase: true,
             select: false
@@ -32,7 +34,14 @@ const UserSchema = new mongoose.Schema(
             type: String,
             enum: ["male", "female", "empty"],  
             default: "empty"
-        }          
+        },
+        //W6
+        password:{
+            type: String,
+            required: [true, "帳號密碼未填寫"],
+            minlength: 8, 
+            select: false
+          },
     },
     // schema options:
     {
