@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "77101c6f-c829-46c1-99b4-9b040591ea7b",
+		"name": "MetaWall貼文集合 - rander",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "34334207"
+	},
+	"item": [
+		{
+			"name": "取得用戶所有貼文",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://node2024-express-metawall.onrender.com/posts",
+					"protocol": "https",
+					"host": [
+						"node2024-express-metawall",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"posts"
+					],
+					"query": [
+						{
+							"key": "timeSort",
+							"value": "asc",
+							"disabled": true
+						},
+						{
+							"key": "q",
+							"value": "跳",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "新增用戶單筆貼文",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": \"6670fae15e18a6619aa4109f\",\r\n    \"content\": \"觸球!\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://node2024-express-metawall.onrender.com/posts",
+					"protocol": "https",
+					"host": [
+						"node2024-express-metawall",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "刪除用戶所有貼文",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://node2024-express-metawall.onrender.com/posts",
+					"protocol": "https",
+					"host": [
+						"node2024-express-metawall",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"posts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "刪除用戶單筆貼文",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://node2024-express-metawall.onrender.com/posts/1234",
+					"protocol": "https",
+					"host": [
+						"node2024-express-metawall",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"posts",
+						"1234"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "編輯用戶單筆貼文",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"user\": \"6670fae15e18a6619aa4109e\",\r\n    \"content\": \"跳躍!\",\r\n    \"imageUrl\":\"\",\r\n    \"likes\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://node2024-express-metawall.onrender.com/posts/6670fd0d0daecda21c020fd7",
+					"protocol": "https",
+					"host": [
+						"node2024-express-metawall",
+						"onrender",
+						"com"
+					],
+					"path": [
+						"posts",
+						"6670fd0d0daecda21c020fd7"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
