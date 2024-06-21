@@ -47,3 +47,6 @@ CommentSchema.pre(/^find/, function (next) {
 //模組名稱字首大寫
 //mongoose issue: Comment(模組名稱) > comments(DB collection name)
 const Comment = mongoose.model('Comment', CommentSchema);
+
+module.exports = Comment;
+

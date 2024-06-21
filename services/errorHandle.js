@@ -4,6 +4,7 @@ const errorMag = {
     'idorAuth': '無此貼文 _id 或 非用戶無權異動', //W6
     'format': '回傳格式錯誤，請重新輸入！',
     'update': '更新失敗',
+    'unfindUser': '無此用戶',
     'required': '必填欄位未填寫', //W5
     'routing': '無此網站路由',
     '500': '系統錯誤，請洽系統管理員' //W5     

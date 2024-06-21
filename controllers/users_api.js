@@ -1,6 +1,7 @@
 //W6: 用戶登入驗證與用戶資料處理
 const bcrypt = require('bcryptjs');
 //model 
+const Post = require('../models/post'); //W8
 const User = require('../models/user');
 //middleware
 const appError = require('../middleware/appError');
@@ -11,6 +12,93 @@ const successHandle = require('../services/successHandle');
 
 
 const users_api = {
+  //=====會員按讚追蹤動態===== W8
+  async addFollow (req, res, next) {
+    if (req.params.userID === req.user.id) {
+      return next(appError(401,'您無法追蹤自己',next));
+    }
+    const findUser = await User.findOne({"_id":req.params.userID});
+    if(!findUser){
+        return next(appError(400,'unfindUser',next));
+    }
+   
+    // 更新到追隨者
+    await User.updateOne(
+      {
+        _id: req.user.id,
+        'following.user': { $ne: req.params.userID }
+      },
+      {
+        $addToSet: { following: { user: req.params.userID } }
+      }
+    );
+    // 更新到跟隨者
+    await User.updateOne(
+      {
+        _id: req.params.userID,
+        'followers.user': { $ne: req.user.id }
+      },
+      {
+        $addToSet: { followers: { user: req.user.id } }
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      message: '您已成功追蹤！'
+    });
+  },
+  async unFollow (req, res, next) {
+    if (req.params.userID === req.user.id) {
+      return next(appError(401,'您無法取消追蹤自己',next));
+    }
+    const findUser = await User.findOne({"_id":req.params.userID});
+    if(!findUser){
+        return next(appError(400,'unfindUser',next));
+    }    
+    // 更新到追隨者
+    await User.updateOne(
+      {
+        _id: req.user.id
+      },
+      {
+        $pull: { following: { user: req.params.userID } }
+      }
+    );
+    // 更新到跟隨者
+    await User.updateOne(
+      {
+        _id: req.params.userID
+      },
+      {
+        $pull: { followers: { user: req.user.id } }
+      }
+    );
+    res.status(200).json({
+      status: 'success',
+      message: '您已成功取消追蹤！'
+    });
+  },
+  async getLikeList (req, res, next) {
+    const likeList = await Post.find({
+      likes: { $in: [req.user.id] }
+    }).populate({
+      path:"user",
+      select:"name _id"
+    }).sort('-createdAt');
+    successHandle(res, likeList);
+
+  },
+  async getFollowingList (req, res, next) {
+    const followingList = await User.findById(req.user.id)
+                                    .select('following.user following.createdAt')
+                                    .populate({ path:"following.user",
+                                                select:"name photoUrl" });
+
+    successHandle(res,followingList.following);
+     
+  },
+  
+  //=====會員功能=====  
     async signUp (req, res, next) {
       let { email,password,confirmPassword,name } = req.body;
       // 內容不可為空

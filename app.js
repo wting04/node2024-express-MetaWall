@@ -9,6 +9,7 @@ const appErrorHandle = require('./middleware/appErrorHandle'); //W5
 //const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const postsRouter = require('./routes/posts');
+const uploadRouter = require('./routes/upload'); //W7
 
 const app = express();
 //W5-1: 程式出現重大錯誤時
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 //app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+app.use('/upload', uploadRouter); //W7
 
 //W4: 404 路由錯誤
 app.use((req, res, next) => {

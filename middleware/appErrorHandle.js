@@ -44,13 +44,23 @@ const appErrorHandle = (err, req, res, next) => {
       err.message = `id: ${err.value} 回傳格式錯誤，請重新輸入！`;
       err.isOperational = true;
       return resErrorProd(err, res); 
-    }    
+    }   
+    else if (err.name === 'MulterError') {
+      err.message = err.message;
+      err.isOperational = true;
+      return resErrorProd(err, res); 
+    }        
     else if (err.name === 'SyntaxError') {
       err.message = '語法錯誤';
       err.isOperational = true;
       return resErrorProd(err, res); 
     }      
-
+    else if (err.code === 'LIMIT_FILE_SIZE'){
+      err.message = "上傳的檔案過大"
+      err.isOperational = true;
+      return resErrorProd(err, res);
+    }
+    
     resErrorProd(err, res)
 }
 
