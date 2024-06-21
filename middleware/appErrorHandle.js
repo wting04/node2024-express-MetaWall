@@ -41,7 +41,7 @@ const appErrorHandle = (err, req, res, next) => {
       return resErrorProd(err, res);
     } 
     else if (err.name === 'CastError') {
-      err.message = `id ${err.value} 格式錯誤，請重新輸入`;
+      err.message = `id: ${err.value} 回傳格式錯誤，請重新輸入！`;
       err.isOperational = true;
       return resErrorProd(err, res); 
     }    

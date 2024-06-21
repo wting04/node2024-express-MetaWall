@@ -1,6 +1,7 @@
 const errorMag = {
     'data': '無資料',
     'id': '無此 _id',
+    'idorAuth': '無此貼文 _id 或 非用戶無權異動', //W6
     'format': '回傳格式錯誤，請重新輸入！',
     'update': '更新失敗',
     'required': '必填欄位未填寫', //W5

@@ -4,9 +4,9 @@ const User = require('../models/user'); //W4
 
 //middleware
 const appError = require('../middleware/appError'); //W5-3: 可預期錯誤的管理，替代原{errorHandle}
+const customizeValidator = require('../middleware/customizeValidator');
 //回傳結果模組化
-const successHandle = require('../services/successHandle');
-//const { errorHandle } = require('./services/errorHandle'); 
+const successHandle = require('../services/successHandle'); 
 
 /*將函式方法打包成物件
     function(req, res, next) {
@@ -37,50 +37,45 @@ const posts_api = {
         successHandle(res, allPost);
     },
     async createPost(req, res, next){
-        const data = req.body;
-        if(data.content === undefined){
+        //console.log(req.user.id);
+        const { imageUrl, content } = req.body;
+
+        if(content === undefined){
             return next(appError(400,"發文內容 content 未提供"));
         }
-        const newPost = await Post.create(
-            {
-                user: data.user,
-                content: data.content.trim(),
-                imageUrl: data.imageUrl,
-                likes: data.likes                                  
-            }
-        );    
-        successHandle(res, newPost);        
-/*
-        try{
-            const data = req.body;
-            if (data.content !== undefined) {
-                const newPost = await Post.create(
-                    {
-                        user: data.user,
-                        content: data.content.trim(),
-                        imageUrl: data.imageUrl,
-                        likes: data.likes                                  
-                    }
-                );
-                successHandle(res, newPost);
-            } else {
-                errorHandle(res, 400, 'format');
-            }                    
+        const isValid = !imageUrl || imageUrl && customizeValidator.url(imageUrl, next, 'imageUrl');
+        if (!isValid) { return }
+           
+        const findUser = await User.findById(req.user.id);
+        if (findUser) {
+            const newPost = await Post.create(
+                { 
+                    user: req.user.id, 
+                    imageUrl: imageUrl, 
+                    content: content.trim()
+                }
+            );
+            //successHandle(res, newPost);
+            const newPostDetail = await newPost.populate({ 
+                path: 'user', select: 'name imageUrl' 
+            });
+            successHandle(res,newPostDetail);   
 
-        }catch(error){
-            errorHandle(res, 400, 'format');
-        }
-*/            
+        } else {
+            return next(appError(400, '此用戶不存在', next));
+        }     
+        //asyncErrorHandles catch: errorHandle(res, 400, 'format');          
     }, 
     async deleteAllPost(req, res, next){
+        console.log(req.user.id);
         if(req.originalUrl === '/posts'){
-            const datanum = await Post.find().count();
-            if(datanum >= 1){
-                await Post.deleteMany({});
+            // const datanum = await Post.find({ user: req.user.id }).count();
+            // if(datanum >= 1){
+                await Post.deleteMany({ user: req.user.id });
                 successHandle(res, []); //顯示清空
-            }else{
-                return next(appError(400, 'data', next));
-            }
+            // }else{
+            //     return next(appError(400, 'data', next));
+            // }
 
         }else{
             return next(appError(404, 'routing', next));
@@ -88,65 +83,43 @@ const posts_api = {
 
     },  
     async deleteOnePost(req, res, next){
-        try{
-            const id = req.params.id;
-            const delPost = await Post.findByIdAndDelete(id);
-            if (delPost) {
-                successHandle(res, delPost);
-            } else {
-                return next(appError(400, 'id', next));
-            }            
-        }catch(error){
-            return next(appError(400, 'id', next));
-        }
+        const { params, user } = req;
+        
+        const delPost = await Post.findOneAndDelete({ _id: params.id , user: user.id });
+        if (delPost) {
+            successHandle(res, delPost);
+        } else {
+            return next(appError(400, 'idorAuth', next));
+        }       
+                 
     },           
     async editOnePost(req, res, next){
-        const data = req.body; //AS POST 
-        if(data.content === undefined){
+        const { body, params, user } = req; //AS DELETE{id}
+        const { imageUrl, content } = body; //AS POST 
+
+        if(content === undefined){
             return next(appError(400,"發文內容 content 未提供"));
-        }  
+        }
+        const isValid = !imageUrl || imageUrl && customizeValidator.url(imageUrl, next, 'imageUrl');
+        if (!isValid) { return }        
+
         const upddata = { 
-            user: data.user,
-            content: data.content.trim(),
-            imageUrl: data.imageUrl, 
-            likes: data.likes       
+            content: content.trim(),
+            imageUrl: imageUrl     
         };
         //更新單筆
-        const id = req.params.id; //AS DELETE{id}
         //option開啟new 可回傳修改成功的資料、開啟runValidators 作更新資料的驗證
-        const resPost = await Post.findByIdAndUpdate(id,upddata,{new: true, runValidators: true});                  
+        const resPost = await Post.findByIdAndUpdate(
+            { _id: params.id, user: user.id},
+            upddata,
+            {new: true, runValidators: true});                  
         if (resPost) {
             successHandle(res, resPost);
         } else {
-            return next(appError(400, 'id', next));
-        } 
-/*
-        try{
-            const data = req.body; //AS POST 
-
-            if (data.user !== undefined && data.content !== undefined) {
-                const upddata = { 
-                    user: data.user,
-                    content: data.content.trim(),
-                    imageUrl: data.imageUrl, 
-                    likes: data.likes       
-                };
-                //更新單筆
-                const id = req.params.id; //AS DELETE{id}
-                //option開啟new 可回傳修改成功的資料、開啟runValidators 作更新資料的驗證
-                const resPost = await Post.findByIdAndUpdate(id,upddata,{new: true, runValidators: true});                  
-                if (resPost) {
-                    successHandle(res, resPost);
-                } else {
-                    errorHandle(res, 400, 'id');
-                } 
-            } else {
-                errorHandle(res, 400,'update');                
-            }                                           
-        }catch(error){
-            errorHandle(res, 400, 'update');
-        }  
-*/              
+            return next(appError(400, 'idorAuth', next));
+        }
+        //asyncErrorHandles catch: errorHandle(res, 400, 'update'); 
+          
     }, 
 }
 
